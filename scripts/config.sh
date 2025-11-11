@@ -3,8 +3,10 @@
 export DATA_FOLDER_NAME="data"
 export LOG_FOLDER_NAME="logs"
 export SCRIPTS_FOLDER_NAME="scripts"
-export LOG_FILE=assemble_files.log
-export MOVE_FILES_LOG_NAME=move_files.log
+export LOG_FILE="assemble_files.log"
+export MOVE_FILES_LOG_NAME="move_files.log"
+export DRYRUN_OUTPUT_LOG_NAME="dryrun-output.log"
+export OUTPUT_LOG_NAME="output.log"
 
 export MAX_FILE_SIZE_THRESHOLD=1048576  # 1MB
 

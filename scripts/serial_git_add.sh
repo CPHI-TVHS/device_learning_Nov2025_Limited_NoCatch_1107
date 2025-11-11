@@ -1,10 +1,12 @@
 #!/bin/bash
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-pushd "$SCRIPT_DIR/.."
+source "$(dirname "$0")/config.sh"
 
-DATA_DIR="$(pwd)/data"
-LOGS_DIR="$(pwd)/logs"
+
+
+DATA_DIR="$(get_data_folder)"
+LOGS_DIR="$(get_log_folder)"
+
 mkdir -p "$LOGS_DIR"
 DRYRUN=
 
@@ -31,15 +33,14 @@ DRYRUN=${DRYRUN:-0}
 EXT=${EXT#.}
 
 if [[ $DRYRUN -eq 1 ]]; then
-    OUTPUT_LOG="$LOGS_DIR/dryrun-output.log"
+    OUTPUT_LOG="$LOGS_DIR/$DRYRUN_OUTPUT_LOG_NAME"
 else
-    OUTPUT_LOG="$LOGS_DIR/output.log"
+    OUTPUT_LOG="$LOGS_DIR/$OUTPUT_LOG_NAME"
 fi
 
-
 # Create and modify .gitignore file
-if [[ ! -f .gitignore ]]; then
-    touch .gitignore
+if [[ ! -f ../.gitignore ]]; then
+    touch ../.gitignore
     echo "*output.log" > .gitignore
     echo "*.tar" >> .gitignore
     echo "*.xz" >> .gitignore
@@ -91,7 +92,17 @@ for ((i=0; i<total_files; i++)); do
             echo -e "\n" "$((i + 1))" "of $total_files"
             sleep .01
         fi
+    else
+        echo "[DRYRUN] git add \"$filepath\"" >> $OUTPUT_LOG 2>&1
+        echo "[DRYRUN] git commit -m \"Added $filepath\"" >> $OUTPUT_LOG 2>&1
+        if (( (i + 1) % PUSH_BATCH_COUNT == 0 )) || [[ $i -eq $((total_files - 1)) ]]; then
+            echo "[DRYRUN] git push" >> $OUTPUT_LOG 2>&1
+            show_progress $((i + 1)) $total_files
+            echo -e "\n" "$((i + 1))" "of $total_files"
+            sleep .01
+        fi
     fi
+
   
     echo -e "\n$filepath added" >> $OUTPUT_LOG 2>&1
 
@@ -109,7 +120,9 @@ done
 
 echo -e "\nAll files processed."
 
-echo "done" > DONEFILE.md
-git add DONEFILE.md
+echo "done" > "$(get_parent_path)/DONEFILE.md"
+git add "$(get_parent_path)/DONEFILE.md"
+git rm --cached "$(get_parent_path)/InProcess.md"
+git add . --all
 git commit -m "done"
 git push

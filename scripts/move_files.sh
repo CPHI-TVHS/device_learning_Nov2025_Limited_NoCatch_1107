@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+source "$(dirname "$0")/config.sh"
+
+echo "DATA_FOLDER_NAME: $DATA_FOLDER_NAME"
+
 ORIGIN_FOLDER="$1"
 
 if [[ -z "$ORIGIN_FOLDER" ]]; then
@@ -17,7 +21,7 @@ if ! ls "$ORIGIN_FOLDER"/*.csv.gz 1> /dev/null 2>&1; then
     exit 1
 fi
 
-DEST=$(get_data_folder)
+DEST="$(get_data_folder)"
 
 if [[ ! -d "$DEST" ]]; then
     echo "Destination directory does not exist: $DEST" | tee -a "$LOG_FILE"
