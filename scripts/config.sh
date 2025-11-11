@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-DATA_FOLDER_NAME="data"
-LOG_FOLDER_NAME="logs"
-SCRIPTS_FOLDER_NAME="scripts"
-LOG_FILE=assemble_files.log
-MOVE_FILES_LOG_NAME=move_files.log
+export DATA_FOLDER_NAME="data"
+export LOG_FOLDER_NAME="logs"
+export SCRIPTS_FOLDER_NAME="scripts"
+export LOG_FILE=assemble_files.log
+export MOVE_FILES_LOG_NAME=move_files.log
 
-MAX_FILE_SIZE_THRESHOLD=1048576  # 1MB
+export MAX_FILE_SIZE_THRESHOLD=1048576  # 1MB
 
 function get_parent_path() {
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,7 +15,7 @@ function get_parent_path() {
 
 function get_data_folder() {
     data_folder="$(get_parent_path)/${DATA_FOLDER_NAME}"
-    [[ -d "$data_folder" ]] || echo "invalid data folder: $data_folder" && exit 1
+    [[ -d "$data_folder" ]] || { echo "invalid data folder: $data_folder" >&2; exit 1; }
     echo $data_folder
 }
 
@@ -28,3 +28,6 @@ function get_log_folder() {
 function get_scripts_folder() {
     echo "$(get_parent_path)/${SCRIPTS_FOLDER_NAME}"
 }
+
+
+echo $(get_data_folder)
